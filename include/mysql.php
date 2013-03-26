@@ -20,7 +20,10 @@
 
     function db_connect($dbhost,$dbuser, $dbpass,$dbname = "") {
         
-        if(!strlen($dbuser) || !strlen($dbpass) || !strlen($dbhost))
+        /*if(!strlen($dbuser) || !strlen($dbpass) || !strlen($dbhost))
+      	    return NULL;*/
+        /*SENHA PARA CONEXAO PODE SER VAZIA*/
+        if(!strlen($dbuser) || !strlen($dbhost))
       	    return NULL;
 
         @$$dblink =mysql_connect($dbhost, $dbuser, $dbpass);

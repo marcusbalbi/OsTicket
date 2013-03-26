@@ -80,7 +80,8 @@ if(file_exists('../ostconfig.php') || file_exists('../include/settings.php')) { 
         $f['dbhost']    = array('type'=>'string', 'required'=>1, 'error'=>'Hostname required');
         $f['dbname']    = array('type'=>'string', 'required'=>1, 'error'=>'Database name required');
         $f['dbuser']    = array('type'=>'string', 'required'=>1, 'error'=>'Username required');
-        $f['dbpass']    = array('type'=>'string', 'required'=>1, 'error'=>'password required');
+        /*SENHA PODE SER VAZIA*/
+       /* $f['dbpass']    = array('type'=>'string', 'required'=>1, 'error'=>'password required');*/
         $f['prefix']    = array('type'=>'string', 'required'=>1, 'error'=>'Table prefix required');
         
         $validate = new Validator($f);
