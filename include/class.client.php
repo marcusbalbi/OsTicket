@@ -29,11 +29,12 @@ class Client {
 
     
     var $udata;
-    var $ticket_id;
-    var $ticketID;
+    
+    function __construct($email,$id = 0) {
+        return ($this->lookup($id,$email));
+    }
 
-    function Client($email,$id){
-        $this->id =0;
+    function Client($email,$id = 0){
         return ($this->lookup($id,$email));
     }
 
@@ -42,9 +43,14 @@ class Client {
     }
 
     function lookup($id,$email=''){
-        $sql='SELECT ticket_id,ticketID,name,email FROM '.TICKET_TABLE.' WHERE ticketID='.db_input($id);
-        if($email){ //don't validate...using whatever is entered.
-            $sql.=' AND email='.db_input($email);
+      
+        if($id !== 0)
+        {
+            $sql='SELECT id,fullname,email FROM '.CLIENT_TABLE.' WHERE id='.db_input($id);
+        }
+        else
+        {
+            $sql='SELECT id,fullname,email FROM '.CLIENT_TABLE.' WHERE email='.db_input($email);
         }
         $res=db_query($sql);
         if(!$res || !db_num_rows($res))
@@ -53,14 +59,38 @@ class Client {
         /* Faking most of the stuff for now till we start using accounts.*/
         $row=db_fetch_array($res);
         $this->udata=$row;
-        $this->id         = $row['ticketID']; //placeholder
-        $this->ticket_id  = $row['ticket_id'];
-        $this->ticketID   = $row['ticketID'];
-        $this->fullname   = ucfirst($row['name']);
+        $this->id         = $row['id']; 
+        $this->fullname   = ucfirst($row['fullname']);
         $this->username   = $row['email'];
         $this->email      = $row['email'];
       
         return($this->id);
+    }
+    
+    function exists()
+    {
+        if(empty($this->udata))
+        {
+            return false;
+        }
+        else
+            return true;
+    }
+    
+    function isValidUser($pass)
+    {
+        if(!$this->exists() || is_null($pass))
+            return false;
+        
+        $sql = "select count(*) from ".CLIENT_TABLE." where email = '{$this->getEmail()}' and passwd = '".md5(db_input($pass))."'";
+       
+         $res=db_query($sql);
+        if(!$res || !db_num_rows($res))
+            return false; 
+        
+        
+        return true;
+        
     }
 
 
@@ -78,10 +108,6 @@ class Client {
 
     function getName(){
         return($this->fullname);
-    }
-    
-    function getTicketID() {
-        return $this->ticketID;
     }
 }
 
