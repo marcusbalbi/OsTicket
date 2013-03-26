@@ -23,10 +23,10 @@ require_once(INCLUDE_DIR.'class.client.php');
 require_once(INCLUDE_DIR.'class.ticket.php');
 //We are ready baby
 $loginmsg=$trl->translate('TEXT_AUTHENTICATION_REQUIRED');
-if($_POST && (!empty($_POST['lemail']) && !empty($_POST['lticket']))):
+if($_POST && (!empty($_POST['lemail']) && !empty($_POST['pass']))):
     $loginmsg=$trl->translate('TEXT_AUTHENTICATION_REQUIRED');
     $email=trim($_POST['lemail']);
-    $ticketID=trim($_POST['lticket']);
+    $password=trim($_POST['pass']);
     //$_SESSION['_client']=array(); #Uncomment to disable login strikes.
     
     //Check time for last max failed login attempt strike.
@@ -42,26 +42,30 @@ if($_POST && (!empty($_POST['lemail']) && !empty($_POST['lticket']))):
         }
     }
     //See if we can fetch local ticket id associated with the ID given
-    if(!$errors && is_numeric($ticketID) && Validator::is_email($email) && ($tid=Ticket::getIdByExtId($ticketID))) {
+    if( Validator::is_email($email)) {
         //At this point we know the ticket is valid.
-        $ticket= new Ticket($tid);
+        $client = new Client($email);
+        
         //TODO: 1) Check how old the ticket is...3 months max?? 2) Must be the latest 5 tickets?? 
         //Check the email given.
-        if($ticket->getId() && strcasecmp($ticket->getEMail(),$email)==0){
+        if($client->isValidUser($password)){
+           
             //valid match...create session goodies for the client.
-            $user = new ClientSession($email,$ticket->getId());
+            $user = new ClientSession($email,$client->getId());
             $_SESSION['_client']=array(); //clear.
-            $_SESSION['_client']['userID']   =$ticket->getEmail(); //Email
-            $_SESSION['_client']['key']      =$ticket->getExtId(); //Ticket ID --acts as password when used with email. See above.
+            
+            $_SESSION['_client']['userID']   =$client->getEmail(); //Email
+            $_SESSION['_client']['key']      =$client->getId();//Cliend ID for Auth //Ticket ID --acts as password when used with email. See above.
             $_SESSION['_client']['token']    =$user->getSessionToken();
             $_SESSION['TZ_OFFSET']=$cfg->getTZoffset();
             $_SESSION['daylight']=$cfg->observeDaylightSaving();
             //Log login info...
-            $msg=sprintf("%s/%s logged in [%s]",$ticket->getEmail(),$ticket->getExtId(),$_SERVER['REMOTE_ADDR']);
+            $msg=sprintf("%s logged in [%s]",$client->getEmail(),$_SERVER['REMOTE_ADDR']);
             Sys::log(LOG_DEBUG,'User login',$msg);
             //Redirect tickets.php
             session_write_close();
             session_regenerate_id();
+           
             @header("Location: tickets.php");
             require_once('tickets.php'); //Just incase. of header already sent error.
             exit;
@@ -75,7 +79,6 @@ if($_POST && (!empty($_POST['lemail']) && !empty($_POST['lticket']))):
         $_SESSION['_client']['laststrike']=time();
         $param = array();
 		$param[0] = $_POST['lemail'];
-		$param[1] = $_POST['lticket'];
 		$param[2] = $_SERVER['REMOTE_ADDR'];
 		$param[3] = date('M j, Y, g:i a T');
 		$param[4] = $_SESSION['_client']['strikes'];

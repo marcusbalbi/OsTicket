@@ -108,17 +108,17 @@ class ClientSession extends Client {
     
     var $session;
 
-    function ClientSession($email,$id){
-        parent::Client($email,$id);
+    function ClientSession($email,$id){       
+        parent::Client($email,$id);       
         $this->session= new UserSession($email);
     }
 
     function isValid(){
         global $_SESSION,$cfg;
-
+        
         if(!$this->getId() || $this->session->getSessionId()!=session_id())
             return false;
-        
+       
         return $this->session->isvalidSession($_SESSION['_client']['token'],$cfg->getClientTimeout(),false)?true:false;
     }
 

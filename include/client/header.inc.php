@@ -16,14 +16,12 @@ $trl->sendHeader();
         <a id="logo" href="index.php" title="<?php echo  $trl->translate('TEXT_SUPPORT_CENTER'); ?>"><img src="./images/logo2.jpg" border=0 alt="Support Center"></a>
         <p><?php echo  $trl->translate('TEXT_SUPPORT_TICKET_SISTEM'); ?></p>
     </div>
-    <ul id="nav">
-         <?php                     
-         if($thisclient && is_object($thisclient) && $thisclient->isValid()) {?>
+    <?php  if($thisclient && is_object($thisclient) && $thisclient->isValid()) {?>
+    <ul id="nav">                   
          <li><a class="log_out" href="logout.php"><?php echo  $trl->translate('TEXT_LOG_OUT'); ?></a></li>
-         <?php }else {?>
          <li><a class="ticket_status" href="tickets.php"><?php echo  $trl->translate('TEXT_TICKETS_STATUS'); ?></a></li>
-         <?php }?>
          <li><a class="new_ticket" href="open.php"><?php echo  $trl->translate('TEXT_NEW_TICKET'); ?></a></li>
          <li><a class="home" href="index.php"><?php echo  $trl->translate('TEXT_HOME'); ?></a></li>
     </ul>
+     <?php }?>
     <div id="content">

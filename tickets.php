@@ -15,6 +15,7 @@
     vim: expandtab sw=4 ts=4 sts=4:
     $Id: $
 **********************************************************************/
+
 require('secure.inc.php');
 if(!is_object($thisclient) || !$thisclient->isValid()) die($trl->translate("TEXT_ACCESS_DENIED")); //Double check again.
 

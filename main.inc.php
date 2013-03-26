@@ -126,6 +126,7 @@
     define('GROUP_TABLE',TABLE_PREFIX.'groups');
    
     define('TICKET_TABLE',TABLE_PREFIX.'ticket');
+    define('CLIENT_TABLE',TABLE_PREFIX.'client');
     define('TICKET_NOTE_TABLE',TABLE_PREFIX.'ticket_note');
     define('TICKET_MESSAGE_TABLE',TABLE_PREFIX.'ticket_message');
     define('TICKET_RESPONSE_TABLE',TABLE_PREFIX.'ticket_response');

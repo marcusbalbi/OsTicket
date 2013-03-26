@@ -27,34 +27,19 @@ require(CLIENTINC_DIR.'header.inc.php');
 <div id="index">
 <h1 dir="<?php echo $trl->dir() ?>"><?php te('TEXT_WELCOME_TITLE'); ?></h1>
 <p class="big" dir="<?php echo $trl->dir() ?>"><?php te('TEXT_WELCOME_MSG'); ?></p>
-<hr />
-<br />
 <div class="lcol">
-  <img src="./images/new_ticket_icon.jpg" width="48" height="48" align="left" style="padding-bottom:150px;">
-  <h3 dir="<?php echo $trl->dir() ?>"><?php te('TITLE_BOX_NEW_TICKET'); ?></h3>
-  <p  dir="<?php echo $trl->dir() ?>"><?php te('TEXT_BOX_NEW_TICKET'); ?></p>
-  <form method="link" action="open.php">
-  <br /><br />
-  <input type="submit" class="button2" value="<?php te('LABEL_OPEN_NEW_TICKET') ?>">
-  </form>
-</div>
-<div class="rcol">
-  <img src="./images/ticket_status_icon.jpg" width="48" height="48" align="left" style="padding-bottom:150px;">
-  <h3><?php te('TITLE_OPEN_PREVIOUS_TICKET'); ?></h3>
-  <?php te('TEXT_OPEN_PREVIOUS_TICKET'); ?>
-  <br /><br />
   <form class="status_form" action="login.php" method="post">
     <fieldset>
-      <label><?php te('LABEL_EMAIL'); ?></label>
+      <label>Email:</label>
       <input type="text" name="lemail">
     </fieldset>
     <fieldset>
-     <label><?php te('LABEL_TICKET_NUMBER'); ?></label>
-     <input type="text" name="lticket">
+     <label>Senha:</label>
+     <input type="password" name="pass">
     </fieldset>
     <fieldset>
         <label>&nbsp;</label>
-         <input type="submit" class="button2" value="<?php te('LABEL_CHECK_STATUS'); ?>">
+         <input type="submit" class="button2" value="Efetuar login">
     </fieldset>
   </form>
 </div>
