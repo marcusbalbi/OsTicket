@@ -506,3 +506,13 @@ INSERT INTO `%TABLE_PREFIX%timezone` (`id`, `offset`, `timezone`) VALUES
 (28, 10.0, 'Eastern Australia, Guam, Vladivostok'),
 (29, 11.0, 'Magadan, Solomon Islands, New Caledonia'),
 (30, 12.0, 'Auckland, Wellington, Fiji, Kamchatka');
+
+
+DROP TABLE IF EXISTS `%TABLE_PREFIX%client`;
+CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%client` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fullname` varchar(120) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(120) COLLATE utf8_unicode_ci NOT NULL,
+  `passwd` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
