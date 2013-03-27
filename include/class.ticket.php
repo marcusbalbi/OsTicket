@@ -592,7 +592,7 @@ class Ticket{
     }
 
     //Insert message from client
-    function postMessage($msg,$source='',$msgid=NULL,$headers='',$newticket=false){
+    function postMessage($msg,$source='',$msgid=NULL,$headers='',$newticket=false,$client = null){
         global $cfg;
        
         if(!$this->getId())
@@ -639,7 +639,7 @@ class Ticket{
                 //See if the incoming email is local - no autoresponse.
                 if(Email::getIdByEmail($this->getEmail())) //Loop control---mainly for emailed tickets.
                     $autorespond=false;
-                elseif(strpos(strtolower($var['email']),'mailer-daemon@')!==false || strpos(strtolower($var['email']),'postmaster@')!==false)
+                elseif(strpos(strtolower($client->getEmail()),'mailer-daemon@')!==false || strpos(strtolower($client->getEmail()),'postmaster@')!==false)
                     $autorespond=false;
 
                 //TODO: check how many messages haven't been answered...
@@ -1161,8 +1161,7 @@ class Ticket{
 
         $id=0;
         $fields=array();
-        $fields['name']     = array('type'=>'string',   'required'=>1, 'error'=>$trl->translate('ERROR_NAME_REQUIRED'));
-        $fields['email']    = array('type'=>'email',    'required'=>1, 'error'=>'Valid email required');
+        $fields['client']    = array('type'=>'int',    'required'=>1, 'error'=>'Client Required');
         $fields['subject']  = array('type'=>'string',   'required'=>1, 'error'=>'Subject required');
         $fields['message']  = array('type'=>'text',     'required'=>1, 'error'=>$trl->translate('ERROR_MESSAGE_REQUIRED'));
         if(strcasecmp($origin,'web')==0) { //Help topic only applicable on web tickets.
@@ -1219,8 +1218,9 @@ class Ticket{
 
         //check ticket limits..if limit set is >0 
         //TODO: Base ticket limits on SLA...
-        if($var['email'] && !$errors && $cfg->getMaxOpenTickets()>0 && strcasecmp($origin,'staff')){
-            $openTickets=Ticket::getOpenTicketsByEmail($var['email']);
+        $client = new Client('',$var['client']);
+        if($var['client'] && !$errors && $cfg->getMaxOpenTickets()>0 && strcasecmp($origin,'staff')){              
+            $openTickets=Ticket::getOpenTicketsByEmail($client->getEmail());
             if($openTickets>=$cfg->getMaxOpenTickets()) {
                 $errors['err']="You've reached the maximum open tickets allowed.";
                 //Send the notice only once (when the limit is reached) incase of autoresponders at client end.
@@ -1236,8 +1236,8 @@ class Ticket{
                     $resp=db_query($sql);
                     if(db_num_rows($resp) && list($subj,$body)=db_fetch_row($resp)){
 
-                        $body = str_replace("%name", $var['name'],$body);
-                        $body = str_replace("%email",$var['email'],$body);
+                        $body = str_replace("%name", $client->getName(),$body);
+                        $body = str_replace("%email",$client->getEmail(),$body);
                         $body = str_replace("%url", $cfg->getBaseUrl(),$body);
                         $body = str_replace('%signature',($dept && $dept->isPublic())?$dept->getSignature():'',$body);
 
@@ -1245,10 +1245,10 @@ class Ticket{
                             $email=$cfg->getDefaultEmail();
                         
                         if($email)
-                            $email->send($var['email'],$subj,$body);
+                            $email->send($client->getEmail(),$subj,$body);
                     }
                     //Alert admin...this might be spammy (no option to disable)...but it is helpful..I think.
-                    $msg='Support ticket request denied for '.$var['email']."\n".
+                    $msg='Support ticket request denied for '.$client->getEmail()."\n".
                          'Open ticket:'.$openTickets."\n".
                          'Max Allowed:'.$cfg->getMaxOpenTickets()."\n\nNotice only sent once";
                     Sys::alertAdmin('Overlimit Notice',$msg);
@@ -1291,7 +1291,7 @@ class Ticket{
         }
 
         //Don't auto respond to mailer daemons.
-        if(strpos(strtolower($var['email']),'mailer-daemon@')!==false || strpos(strtolower($var['email']),'postmaster@')!==false)
+        if(strpos(strtolower($client->getEmail()),'mailer-daemon@')!==false || strpos(strtolower($client->getEmail()),'postmaster@')!==false)
             $autorespond=false;
 
         //Last minute checks
@@ -1307,8 +1307,8 @@ class Ticket{
                 ',dept_id='.db_input($deptId).
                 ',topic_id='.db_input($topicId).
                 ',priority_id='.db_input($priorityId).
-                ',email='.db_input($var['email']).
-                ',name='.db_input(Format::striptags($var['name'])).
+                ',email='.db_input($client->getEmail()).
+                ',name='.db_input(Format::striptags($client->getName())).
                 ',subject='.db_input(Format::striptags($var['subject'])).
                 ',helptopic='.db_input(Format::striptags($topicDesc)).
                 ',phone="'.db_input($var['phone'],false).'"'.
@@ -1334,7 +1334,7 @@ class Ticket{
             //Load newly created ticket.
             $ticket = new Ticket($id);
             //post the message.
-            $msgid=$ticket->postMessage($var['message'],$source,$var['mid'],$var['header'],true);
+            $msgid=$ticket->postMessage($var['message'],$source,$var['mid'],$var['header'],true,$client);
             //TODO: recover from postMessage error??
             //Upload attachments...web based.
             if($_FILES['attachment']['name'] && $cfg->allowOnlineAttachments() && $msgid) {    

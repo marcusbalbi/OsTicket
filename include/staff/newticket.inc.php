@@ -16,23 +16,28 @@ $info=($_POST && $errors)?Format::input($_POST):array(); //on error...use the po
 <table width="80%" border="0" cellspacing="1" cellpadding="2">
     <tr><td align="left" colspan=2><?php  $trl->_('TEXT_PLEASE_FILL_STAFF_FORM_BELOW_OPEN_NEW_TICKET')?></td></tr>
     <tr>
-        <td align="left" nowrap width="20%"><b><?php  $trl->_('LABEL_EMAIL_ADDRESS')?>:</b></td>
+        <td align="left" nowrap width="20%"><b><?php echo "Cliente";  //$trl->_('LABEL_EMAIL_ADDRESS')?>:</b></td>
         <td>
-            <input type="text" id="email" name="email" size="25" value="<?php echo $info['email']?>">
-            &nbsp;<font class="error"><b>*</b>&nbsp;<?php echo $errors['email']?></font>
+            <select name="client">
+                <?php $clients= db_query('SELECT id,fullname,email FROM '.CLIENT_TABLE.' ORDER BY fullname');
+                while (list($id,$fullname,$email) = db_fetch_row($clients)){
+                $selected = ($info['id']==$id)?'selected':''; ?>
+                <option value="<?php echo $id ?>"<?php echo $selected ?>><?php echo $fullname." | ".$email ?></option>
+                <?php } ?>
+            </select>
             <?php  if($cfg->notifyONNewStaffTicket()) {?>
                &nbsp;&nbsp;&nbsp;
                <input type="checkbox" name="alertuser" <?php echo (!$errors || $info['alertuser'])? 'checked': ''?>>Send alert to user.
             <?php }?>
         </td>
     </tr>
-    <tr>
-        <td align="left" ><b><?php $trl->_('LABEL_FULL_NAME');?>:</b></td>
+<!--    <tr>
+        <td align="left" ><b><?php //$trl->_('LABEL_FULL_NAME');?>:</b></td>
         <td>
-            <input type="text" id="name" name="name" size="25" value="<?php echo $info['name']?>">
-            &nbsp;<font class="error"><b>*</b>&nbsp;<?php echo $errors['name']?></font>
+            <input type="text" id="name" name="name" size="25" value="<?php //echo $info['name']?>">
+            &nbsp;<font class="error"><b>*</b>&nbsp;<?php //echo $errors['name']?></font>
         </td>
-    </tr>
+    </tr>-->
     <tr>
         <td align="left"><?php $trl->_('LABEL_TELEPHONE')?>:</td>
         <td><input type="text" name="phone" size="25" value="<?php echo $info['phone']?>">
