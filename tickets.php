@@ -38,7 +38,8 @@ if(($id=$_REQUEST['id']?$_REQUEST['id']:$_POST['ticket_id']) && is_numeric($id))
     }
 }
 //Process post...depends on $ticket object above.
-if($_POST && is_object($ticket) && $ticket->getId()):
+if($_POST && is_object($ticket) && $ticket->getId()){
+   
     $errors=array();
     switch(strtolower($_POST['a'])){
     case 'postmessage':
@@ -46,7 +47,6 @@ if($_POST && is_object($ticket) && $ticket->getId()):
             $errors['err']='Access Denied. Possibly invalid ticket ID';
             $inc='tickets.inc.php'; //Show the tickets.               
         }
-
         if(!$_POST['message'])
             $errors['message']='Message required';
         //check attachment..if any is set
@@ -58,13 +58,15 @@ if($_POST && is_object($ticket) && $ticket->getId()):
             elseif($_FILES['attachment']['size']>$cfg->getMaxFileSize())
                 $errors['attachment']='File is too big. Max '.$cfg->getMaxFileSize().' bytes allowed';
         }
-                    
+                 
         if(!$errors){
             //Everything checked out...do the magic.
+           
             if(($msgid=$ticket->postMessage($_POST['message'],'Web'))) {
+              
                 if($_FILES['attachment']['name'] && $cfg->canUploadFiles() && $cfg->allowOnlineAttachments())
                     $ticket->uploadAttachment($_FILES['attachment'],$msgid,'M');
-                    
+                        
                 $msg='Message Posted Successfully';
             }else{
                 $errors['err']='Unable to post the message. Try again';
@@ -72,12 +74,13 @@ if($_POST && is_object($ticket) && $ticket->getId()):
         }else{
             $errors['err']=$errors['err']?$errors['err']:'Error(s) occured. Please try again';
         }
+       
         break;
     default:
         $errors['err']='Uknown action';
     }
     $ticket->reload();
-endif;
+}
 include(CLIENTINC_DIR.'header.inc.php');
 include(CLIENTINC_DIR.$inc);
 include(CLIENTINC_DIR.'footer.inc.php');

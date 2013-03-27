@@ -636,12 +636,11 @@ class Ticket{
                
                 
                 $autorespond=true; //if anabled.
-                //See if the incoming email is local - no autoresponse.
+                //See if the incoming email is local - no autoresponse.             
                 if(Email::getIdByEmail($this->getEmail())) //Loop control---mainly for emailed tickets.
                     $autorespond=false;
-                elseif(strpos(strtolower($client->getEmail()),'mailer-daemon@')!==false || strpos(strtolower($client->getEmail()),'postmaster@')!==false)
+                elseif(empty($client) || strpos(strtolower($client->getEmail()),'mailer-daemon@')!==false || strpos(strtolower($client->getEmail()),'postmaster@')!==false)
                     $autorespond=false;
-
                 //TODO: check how many messages haven't been answered...
 
                 //If enabled...send confirmation to user. ( New Message AutoResponse)
