@@ -58,8 +58,11 @@ class StaffNav {
 			$title = $trl->translate('LABEL_DIRECTORY_STAFF');
 			$tabs['directory']=array('desc'=>$desc,'href'=>'directory.php','title'=>$title);
 			$desc = $trl->translate('LABEL_MY_ACCOUNT');
-			$title = $trl->translate('LABEL_MY_ACCOUNT');
-			$tabs['profile']=array('desc'=>$desc,'href'=>'profile.php','title'=>$title);
+                        $title = $trl->translate('LABEL_MY_ACCOUNT');
+                        $tabs['profile'] = array('desc' => $desc, 'href' => 'profile.php', 'title' => $title);
+                        $desc = "Clients";
+                        $title = "Clients";
+                        $tabs['clients'] = array('desc' => $desc, 'href' => 'client.php', 'title' => $title);
 		}
 		$this->tabs=$tabs;
 	}
